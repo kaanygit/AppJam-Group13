@@ -10,6 +10,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home Screen"),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -17,11 +18,10 @@ class HomeScreen extends StatelessWidget {
               // Çıkış yap butonuna basıldığında Firebase üzerinden çıkış yap
               await _firebaseOperations.signOut();
               // Çıkış yapıldıktan sonra giriş ekranına geri dön
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => AuthScreen()),
-                (route) => false,
-              );
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (context) => AuthScreenState()));
             },
           ),
         ],
