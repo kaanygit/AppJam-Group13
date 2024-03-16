@@ -25,16 +25,16 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return HomeScreen();
+              return const HomeScreen();
             } else if (snapshot.hasError) {
-              return Scaffold(
+              return const Scaffold(
                 body: Center(
                   child: Text(
                       "Bir hata oluştu. Detaylar için debug console'u kontrol edin."),
                 ),
               );
             } else {
-              return AuthScreen();
+              return const AuthScreen();
             }
           }),
     );

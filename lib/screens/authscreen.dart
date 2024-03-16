@@ -1,22 +1,25 @@
 import 'package:appjam_group13/database/firebase.dart';
 import 'package:appjam_group13/screens/homescreen.dart';
 import 'package:appjam_group13/widgets/flash_message.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:appjam_group13/widgets/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sign_button/sign_button.dart';
 
 class AuthScreenState extends StatelessWidget {
-  const AuthScreenState({Key? key});
+  const AuthScreenState({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AuthScreen();
+    return const AuthScreen();
   }
 }
 
 class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }
@@ -29,10 +32,18 @@ class _AuthScreenState extends State<AuthScreen> {
       TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   late bool loginPageController = false;
+  late bool startLoginPageController = false;
 
-  OutlineInputBorder _border = OutlineInputBorder(
+  @override
+  void dispose() {
+    // Firebase işlemlerini temizle
+    // _firebaseOperations.dispose();
+    super.dispose();
+  }
+
+  final OutlineInputBorder _border = OutlineInputBorder(
     borderRadius: BorderRadius.circular(12.0),
-    borderSide: BorderSide(color: Colors.grey),
+    borderSide: const BorderSide(color: Colors.grey),
   );
 
   Future<void> _signUpWithEmailAndPassword() async {
@@ -62,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Kayıt başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } else {
         // Show error message
@@ -98,7 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Giriş başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
@@ -117,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -129,23 +140,91 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: loginPageController ? signUpScreen() : signInScreen(),
+      body: startLoginPageController
+          ? loginPageController
+              ? signUpScreen()
+              : signInScreen()
+          : startLoginPageScreen(),
+    );
+  }
+
+  Container startLoginPageScreen() {
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/auth_page_photo.jpeg"),
+          fit: BoxFit.cover, // Adjusted BoxFit to cover the entire screen
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 100, // Adjust as needed to position vertically
+            left: 20, // Adjust as needed to position horizontally from the left
+            right:
+                20, // Adjust as needed to position horizontally from the right
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Spacer(),
+                Text(
+                  "AppJam",
+                  style:
+                      fontStyle(40, const Color(0xFFDBFF00), FontWeight.bold),
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 100, // Adjust as needed to position vertically
+            left: 20, // Adjust as needed to position horizontally from the left
+            right:
+                20, // Adjust as needed to position horizontally from the right
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007AFF),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12))),
+                      onPressed: () {
+                        print("Start App");
+                        setState(() {
+                          startLoginPageController = true;
+                        });
+                      },
+                      child: Text(
+                        "Start",
+                        style: fontStyle(25, Colors.white, FontWeight.normal),
+                      )),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Center signInScreen() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                child: Text("AppJam13"),
+                child: Text(
+                  "AppJam13",
+                  style: fontStyle(25, Colors.black, FontWeight.bold),
+                ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -153,7 +232,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -162,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -173,7 +252,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12))),
-                      child: Padding(
+                      child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text("Sign In"),
                       ),
@@ -181,16 +260,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: Divider(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text("or continue with"),
                   ),
                   Expanded(
@@ -198,7 +277,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -209,11 +288,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   )),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account ? "),
+                  const Text("Don't have an account ? "),
                   TextButton(
                     onPressed: () {
                       print("Login In");
@@ -221,7 +300,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: Text("Sign Up"),
+                    child: const Text("Sign Up"),
                   )
                 ],
               )
@@ -235,16 +314,16 @@ class _AuthScreenState extends State<AuthScreen> {
   Center signUpScreen() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                child: Text("AppJam13"),
+                child: const Text("AppJam13"),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -252,7 +331,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -260,7 +339,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -269,7 +348,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
@@ -278,7 +357,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: _border,
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -289,7 +368,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12))),
-                      child: Padding(
+                      child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text("Sign Up"),
                       ),
@@ -297,16 +376,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: Divider(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text("or continue with"),
                   ),
                   Expanded(
@@ -314,7 +393,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -325,11 +404,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   )),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account ? "),
+                  const Text("Don't have an account ? "),
                   TextButton(
                     onPressed: () {
                       print("Login In");
@@ -337,7 +416,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: Text("Sign In"),
+                    child: const Text("Sign In"),
                   )
                 ],
               )

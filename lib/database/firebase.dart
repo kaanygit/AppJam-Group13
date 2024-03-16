@@ -18,7 +18,11 @@ class FirebaseOperations {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    try {
+      _auth.signOut();
+    } catch (e) {
+      print('Can not SignOut as :$e');
+    }
   }
 
   Future<UserCredential?> signUpWithEmailAndPassword(
@@ -63,10 +67,10 @@ class FirebaseOperations {
     bool result = false;
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
+      final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
       final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
@@ -95,12 +99,13 @@ class FirebaseOperations {
     return result;
   }
 
-  Future<Map<String, dynamic>> getProfile() async {
+  Future<Map<String, dynamic>> getProfileBio() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)
           .get();
+
       if (snapshot.exists) {
         Map<String, dynamic> data = snapshot.data()!;
         data['id'] = snapshot.id;
@@ -113,6 +118,39 @@ class FirebaseOperations {
       print("Profil verisi getirilirken hata oluştu: $e");
       return {};
     }
+  }
+
+  Future<void> setEditProfileBio(String newAddress, String newDisplayName,
+      String newEducationLevel, String newPhoneNumber) async {
+    try {
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
+        'address': newAddress,
+        'displayName': newDisplayName,
+        'educationLevel': newEducationLevel,
+        'phoneNumber': newPhoneNumber,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
+      print(
+          "Profil Verisi Güncellendi"); //buradaki bilgileri güncelliycem sistemdekiyle
+    } catch (e) {
+      print("Profil Verisi Eklenirken bir hata oluştu : $e");
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).delete();
+      await _auth.currentUser!.delete();
+    } catch (e) {
+      print("Profil verileri silinirken bir hata oluştu : $e");
+    }
+  }
+
+  void dispose() {
+    // Firebase ile ilişkili kaynakları temizle
+    _auth.signOut(); // Oturumu kapat
+    // Firestore bağlantısını kapat (Opsiyonel olarak)
+    // _firestore.terminate();
   }
 
   // Firestore ile iletişim işlevleri buraya eklenebilir
