@@ -29,6 +29,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _initializeUserProfile();
   }
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    educationController.dispose();
+    addressController.dispose();
+    phoneNumberController.dispose();
+    super.dispose();
+  }
+
   Future<void> _initializeUserProfile() async {
     Map<String, dynamic> user = await _firestoreMethods.getProfileBio();
     setState(() {
@@ -50,7 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              !loadingProfile && userProfile['profilePhoto'] != ""
+              !loadingProfile &&
+                      userProfile['profilePhoto'] != "" &&
+                      userProfile['profilePhoto'] != null
                   ? Container(
                       alignment: Alignment.center,
                       child: CircleAvatar(
@@ -96,7 +107,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
                             ? Text(
-                                !loadingProfile
+                                !loadingProfile &&
+                                        userProfile['displayName'] != null
                                     ? userProfile['displayName']
                                     : "Null",
                                 style: fontStyle(
@@ -127,7 +139,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
                             ? Text(
-                                !loadingProfile
+                                !loadingProfile &&
+                                        userProfile['educationLevel'] != null
                                     ? userProfile['educationLevel']
                                     : "Null",
                                 style: fontStyle(
@@ -160,7 +173,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         !editingScreen
                             ? Text(
-                                !loadingProfile
+                                !loadingProfile &&
+                                        userProfile['address'] != null
                                     ? userProfile['address']
                                     : "Null",
                                 style: fontStyle(
@@ -215,7 +229,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
                             ? Text(
-                                !loadingProfile
+                                !loadingProfile &&
+                                        userProfile['phoneNumber'] != null
                                     ? userProfile['phoneNumber']
                                     : "Null",
                                 style: fontStyle(
@@ -245,7 +260,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: fontStyle(
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         Text(
-                            !loadingProfile
+                            !loadingProfile && userProfile['email'] != null
                                 ? /*userProfile['email']*/ "test@test.com"
                                 : "Null",
                             style:

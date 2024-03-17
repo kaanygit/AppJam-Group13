@@ -73,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Kayıt başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } else {
         // Show error message
@@ -109,7 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Giriş başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
@@ -128,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } else {
       showErrorSnackBar(
