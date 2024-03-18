@@ -1,4 +1,3 @@
-import 'package:appjam_group13/models/traveldata.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -63,7 +62,7 @@ class FirebaseOperations {
           'email': email,
           "savedPlaces": [],
           "joinedPlaces": [],
-
+          "likedPlaces": [],
           'updatedUser': DateTime.now(),
           'createdAt': DateTime.now(),
           // İsteğe bağlı diğer kullanıcı bilgileri buraya eklenebilir
@@ -105,6 +104,7 @@ class FirebaseOperations {
             'email': user.email,
             "savedPlaces": [],
             "joinedPlaces": [],
+            "likedPlaces": [],
             'updatedUser': DateTime.now(),
             'createdAt': DateTime.now(),
           });
@@ -330,6 +330,57 @@ class FirebaseOperations {
       // Hata durumunda, 1 değerini döndürün
       print("Veri Çekerken hata oluştu : $e");
       return 1;
+    }
+  }
+
+  Future<void> setProfileLikedTravel(int id) async {
+    try {
+      Map<String, dynamic> travelData = await getFirebaseTravelDataId(id);
+      Map<String, dynamic> profileData = await getProfileBio();
+      List<dynamic> likedPlaces = profileData['likedPlaces'];
+
+      if (likedPlaces == null) {
+        likedPlaces = [];
+      }
+
+      if (likedPlaces.contains(id)) {
+        likedPlaces.remove(id);
+        print("Beğenme Kalktı");
+      } else {
+        // Değilse, listede bu yerin ID'sini ekleyin
+        likedPlaces.add(id);
+        print("Beğenme Eklendi");
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .update({'likedPlaces': likedPlaces});
+    } catch (e) {
+      print("Veri Çekerken hata oluştu : $e");
+    }
+  }
+
+  Future<void> orderTravelData(int id) async {
+    try {
+      Map<String, dynamic> profileData = await getProfileBio();
+      List<dynamic>? joinedPlaces = List.from(profileData['orderPlaces'] ?? []);
+
+      // Check if the id already exists in the list
+      if (!joinedPlaces.contains(id)) {
+        // If id doesn't exist, add it to the list
+        joinedPlaces.add(id);
+      }
+
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).set(
+        {'joinedPlaces': joinedPlaces},
+        SetOptions(
+            merge:
+                true), // Use merge option to merge the new data with existing data
+      );
+      print("Alışveriş Yapıldı");
+    } catch (e) {
+      print("Veri Çekerken hata oluştu : $e");
     }
   }
 

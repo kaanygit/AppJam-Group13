@@ -1,6 +1,11 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/travel_places_preview.dart';
+import 'package:GezginAt/widgets/fonts.dart';
+import 'package:GezginAt/widgets/loading.dart';
+import 'package:GezginAt/widgets/not_found.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class SavedScreen extends StatefulWidget {
   const SavedScreen({super.key});
@@ -10,20 +15,43 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
-  late List<dynamic> savedPlaces = [];
+  List<Map<String, dynamic>> savedPlaces = [];
+  Map<String, dynamic> userProfile = {};
+
   bool loadingExamData = true;
+  late int likedId;
 
   @override
   void initState() {
     super.initState();
-    getExamList();
+    fetchBookmark();
+    likedId = 0;
   }
 
-  Future<void> getExamList() async {
+  Future<void> likedPlaces(int id) async {
     Map<String, dynamic> data = await FirebaseOperations().getProfileBio();
+    int isLiked = 0;
+    for (var x in data['savedPlaces']) {
+      if (x == id) {
+        isLiked = id;
+        break;
+      }
+    }
+    FirebaseOperations().setProfileLikedTravel(id);
     setState(() {
-      savedPlaces = data['savedPlaces'];
-      print(savedPlaces);
+      likedId = isLiked;
+    });
+  }
+
+  Future<void> fetchBookmark() async {
+    Map<String, dynamic> data = await FirebaseOperations().getProfileBio();
+    List<Map<String, dynamic>> placeData = [];
+    for (var x in data['savedPlaces']) {
+      savedPlaces.add(await FirebaseOperations().getFirebaseTravelDataId(x));
+    }
+    print(placeData);
+    setState(() {
+      userProfile = data;
       loadingExamData = false;
     });
   }
@@ -46,108 +74,126 @@ class _SavedScreenState extends State<SavedScreen> {
                             child: Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/images/niagarafalls.jpg",
-                                      width: 150,
-                                      height: 150,
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                      width: 2.0, color: Colors.grey.shade300)),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TravelPlacesPreview(
+                                                travelPlacesId:
+                                                    savedPlaces[index]['id'],
+                                              )));
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(
+                                        // "assets/images/niagarafalls.jpg",
+                                        "${savedPlaces[index]['resim']}",
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 20),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "Exam ${index + 1}",
-                                              style: fontStyle(20, Colors.black,
-                                                  FontWeight.bold),
-                                            ),
-                                            IconButton(
-                                              onPressed: () {
-                                                print(
-                                                    "Delete this exam $index");
-                                              },
-                                              icon: Icon(Icons.track_changes),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text("zxc",
-                                                    style: fontStyle(
-                                                        15,
-                                                        Colors.green,
-                                                        FontWeight.normal)),
-                                                SizedBox(
-                                                  width: 5,
+                                    SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "${savedPlaces[index]['isim']}",
+                                                style: fontStyle(
+                                                    20,
+                                                    Colors.black,
+                                                    FontWeight.bold),
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  print("heart icon");
+
+                                                  likedPlaces(
+                                                      savedPlaces[index]['id']);
+                                                },
+                                                icon: Icon(
+                                                  CupertinoIcons.heart_fill,
+                                                  color: (likedId ==
+                                                              savedPlaces[index]
+                                                                  ['id'] ||
+                                                          userProfile[
+                                                                  'likedPlaces']
+                                                              .contains(
+                                                                  savedPlaces[
+                                                                          index]
+                                                                      ['id']))
+                                                      ? Colors.red
+                                                      : Colors.black,
                                                 ),
-                                                Text("Questions",
-                                                    style: fontStyle(
-                                                        15,
-                                                        Colors.grey.shade500,
-                                                        FontWeight.normal)),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("as",
-                                                    style: fontStyle(
-                                                        15,
-                                                        Colors.black45,
-                                                        FontWeight.normal)),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text("Duration",
-                                                    style: fontStyle(
-                                                        15,
-                                                        Colors.grey.shade500,
-                                                        FontWeight.normal)),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 10),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            print(
-                                                "Starting the test ${index + 1}");
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.amberAccent,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12))),
-                                          child: Text(
-                                            "Start Test",
-                                            style: fontStyle(15, Colors.white,
-                                                FontWeight.normal),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.location_on,
+                                                    size: 15,
+                                                    color: Colors.amber,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                      "${savedPlaces[index]['konumu']}",
+                                                      style: fontStyle(
+                                                          15,
+                                                          Colors.grey.shade500,
+                                                          FontWeight.normal)),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                      "${savedPlaces[index]['ücreti']} TL",
+                                                      style: fontStyle(
+                                                          15,
+                                                          Colors.red.shade500,
+                                                          FontWeight.normal)),
+                                                ],
+                                              ),
+                                              Container(
+                                                child: Text(
+                                                  "${savedPlaces[index]['hakkında']}",
+                                                  style: fontStyle(
+                                                      15,
+                                                      Colors.grey.shade500,
+                                                      FontWeight.normal),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -155,50 +201,13 @@ class _SavedScreenState extends State<SavedScreen> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        print("Create Exam");
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amberAccent,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      child: Text(
-                        "Create Exam",
-                        style: fontStyle(15, Colors.white, FontWeight.normal),
-                      ),
-                    ),
                   ],
                 )
-              : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Center(
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Text("Image"),
-                          ),
-                          Container(
-                            child: InkWell(
-                              onTap: () {
-                                print("Create a New Exam");
-                              },
-                              child: Text(
-                                "Create the Exam",
-                                style: fontStyle(
-                                    30, Colors.pink, FontWeight.normal),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-          : Center(child: Text("Loading")),
+              : NotFoundScreen()
+          : LoadingWidget(
+              width: 300,
+              height: 300,
+            ),
     );
   }
 }

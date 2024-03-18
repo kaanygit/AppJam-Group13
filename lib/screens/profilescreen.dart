@@ -1,6 +1,6 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/screens/authscreen.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/authscreen.dart';
+import 'package:GezginAt/widgets/fonts.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -289,7 +289,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.amber,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12))),
                         child: Text(
@@ -312,7 +312,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) => const AuthScreen()));
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12))),
                         child: Text(

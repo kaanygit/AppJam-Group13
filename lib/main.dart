@@ -1,5 +1,5 @@
-import 'package:appjam_group13/screens/authscreen.dart';
-import 'package:appjam_group13/screens/homescreen.dart';
+import 'package:GezginAt/screens/authscreen.dart';
+import 'package:GezginAt/screens/homescreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

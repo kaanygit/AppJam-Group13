@@ -1,8 +1,7 @@
 import 'dart:io';
-
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/services/gemini.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/services/gemini.dart';
+import 'package:GezginAt/widgets/fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -172,7 +171,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: Colors.grey.shade100,
                                     borderRadius: BorderRadius.circular(25)),
                                 child: Row(
                                   children: [

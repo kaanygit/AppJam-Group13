@@ -1,10 +1,10 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/screens/chatscreen.dart';
-import 'package:appjam_group13/screens/homepagescreen.dart';
-import 'package:appjam_group13/screens/profilescreen.dart';
-import 'package:appjam_group13/screens/savedscreen.dart';
-
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/chatscreen.dart';
+import 'package:GezginAt/screens/homepagescreen.dart';
+import 'package:GezginAt/screens/profilescreen.dart';
+import 'package:GezginAt/screens/savedscreen.dart';
+import 'package:GezginAt/widgets/fonts.dart';
+import 'package:GezginAt/widgets/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -42,7 +42,7 @@ class _HomeAppState extends State<HomeApp> {
     ProfileScreen(),
   ];
 
-  List<String> selectedName = ["", "Chat", "Saved Places", "Profile"];
+  List<String> selectedName = ["", "Sohbet", "Kaydedilen Yerler", "Profil"];
   @override
   void initState() {
     // TODO: implement initState
@@ -191,8 +191,9 @@ class _HomeAppState extends State<HomeApp> {
               ),
             ),
           )
-        : Scaffold(
-            body: Text("Loading"),
+        : const LoadingWidget(
+            width: 300,
+            height: 300,
           );
   }
 }

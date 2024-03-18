@@ -1,8 +1,10 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/screens/buyscreen.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/buyscreen.dart';
+import 'package:GezginAt/widgets/fonts.dart';
+import 'package:GezginAt/widgets/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -32,262 +34,311 @@ class TravelPlaces extends StatefulWidget {
 
 class _TravelPlacesState extends State<TravelPlaces> {
   late bool _loadingValue = false;
+  bool ordered = false;
   Map<String, dynamic> travelIdData = {};
   late bool bookmark;
+  late bool liked;
   @override
   void initState() {
     super.initState();
     print("Travel ID: ${widget.travelId}");
     fetchTravelIdData();
     bookmark = false;
+    liked = false;
   }
 
   Future<void> fetchTravelIdData() async {
     Map<String, dynamic> getTravelData =
         await FirebaseOperations().getFirebaseTravelDataId(widget.travelId);
+    Map<String, dynamic> data = await FirebaseOperations().getProfileBio();
 
-    print(getTravelData);
     setState(() {
       travelIdData = getTravelData;
       fetchBookmarkAndLiked();
+      ordered = ordered;
+      ordered = data['joinedPlaces'].contains(widget.travelId);
+      print(" Satın alma:$ordered");
+
       _loadingValue = true;
     });
   }
 
-Future<void> fetchBookmarkAndLiked() async {
-  Map<String, dynamic> getProfileData =
-      await FirebaseOperations().getProfileBio();
-  print(getProfileData['savedPlaces'].contains(widget.travelId));
-  setState(() {
-    bookmark = getProfileData['savedPlaces'].contains(widget.travelId);
-    // Renk değişimini burada gerçekleştir
-    bookmark ? Colors.blue : Colors.black;
-  });
-}
+  Future<void> fetchBookmarkAndLiked() async {
+    Map<String, dynamic> getProfileData =
+        await FirebaseOperations().getProfileBio();
+    setState(() {
+      bookmark = getProfileData['savedPlaces'].contains(widget.travelId);
+      liked = getProfileData['likedPlaces'].contains(widget.travelId);
+      liked ? Colors.red : Colors.black;
+      // Renk değişimini burada gerçekleştir
+      bookmark ? Colors.blue : Colors.black;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () {
-            print("Geri düğmesine basıldı");
-            Navigator.pop(context);
-          },
-          child: Container(
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "${travelIdData['isim']}",
-              style: fontStyle(20, Colors.black, FontWeight.bold),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.heart_fill,
-                    color: Colors.red,
+      appBar: _loadingValue
+          ? AppBar(
+              leading: GestureDetector(
+                onTap: () {
+                  print("Geri düğmesine basıldı");
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  child: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black,
                   ),
                 ),
-                IconButton(
-                    onPressed: () {
-                      FirebaseOperations()
-                          .setProfileJoinedBookmarks(travelIdData['id']);
-                      fetchBookmarkAndLiked();
-                    },
-                    icon: Icon(
-                      CupertinoIcons.bookmark_fill,
-                      color: bookmark ? Colors.blue : Colors.black,
-                    ))
-              ],
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: _loadingValue
-              ? Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+              ),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${travelIdData['isim']}",
+                    style: fontStyle(20, Colors.black, FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          FirebaseOperations()
+                              .setProfileLikedTravel(travelIdData['id']);
+                          fetchTravelIdData();
+                        },
+                        icon: Icon(
+                          CupertinoIcons.heart_fill,
+                          color: liked ? Colors.red : Colors.black,
+                        ),
                       ),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.network(
-                              "${travelIdData['resim']}",
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                          Positioned(
-                              bottom: 100,
-                              left: 30,
-                              child: Text(
-                                "${travelIdData['isim']}",
-                                style: fontStyle(
-                                    25, Colors.white, FontWeight.normal),
-                              )),
-                          Positioned(
-                            bottom: 75,
-                            left: 30,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 15,
-                                  color: Colors.white,
+                      IconButton(
+                          onPressed: () {
+                            FirebaseOperations()
+                                .setProfileJoinedBookmarks(travelIdData['id']);
+                            fetchTravelIdData();
+                          },
+                          icon: Icon(
+                            CupertinoIcons.bookmark_fill,
+                            color: bookmark ? Colors.blue : Colors.black,
+                          ))
+                    ],
+                  ),
+                ],
+              ),
+            )
+          : null,
+      body: _loadingValue
+          ? SingleChildScrollView(
+              child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        height: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                width: double
+                                    .infinity, // Genişliği tamamen kaplaması için
+                                height: 300, // Belirli bir yükseklik
+                                child: Image.network(
+                                  "${travelIdData['resim']}",
+                                  fit: BoxFit.cover,
                                 ),
-                                Text(
-                                  "${travelIdData['konumu']}",
+                              ),
+                            ),
+                            Positioned(
+                                bottom: 100,
+                                left: 30,
+                                child: Text(
+                                  "${travelIdData['isim']}",
+                                  style: fontStyle(
+                                      25, Colors.white, FontWeight.normal),
+                                )),
+                            Positioned(
+                              bottom: 75,
+                              left: 30,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    "${travelIdData['konumu']}",
+                                    style: fontStyle(
+                                        15, Colors.white, FontWeight.normal),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              right: 165,
+                              bottom: 20,
+                              child: Transform.scale(
+                                scale:
+                                    0.3, // Rating barı küçültmek için ölçekleme faktörü
+                                child: RatingBar.builder(
+                                  initialRating: 3,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  itemPadding:
+                                      EdgeInsets.symmetric(horizontal: 4.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    print(rating);
+                                  },
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                                bottom: 30,
+                                left: 110,
+                                child: Text(
+                                  "4.8",
                                   style: fontStyle(
                                       15, Colors.white, FontWeight.normal),
-                                ),
-                              ],
+                                ))
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "What's Included",
+                          style: fontStyle(15, Colors.black, FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            includedMethod("Uçak"),
+                            includedMethod("Otel"),
+                            includedMethod("Ulaşım"),
+                            includedMethod("Vize"),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "About Trip",
+                          style: fontStyle(15, Colors.black, FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "${travelIdData['hakkında']}",
+                          style: fontStyle(15, Colors.black, FontWeight.normal),
+                        ),
+                      ),
+                    ],
+                  )),
+            )
+          : LoadingWidget(width: 300, height: 300),
+      bottomNavigationBar: _loadingValue
+          ? BottomAppBar(
+              color: !ordered ? Colors.white : Colors.blue,
+              child: Container(
+                child: !ordered
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            "${travelIdData['ücreti']} TL /Person", // Gezinin fiyatı
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
-                          Positioned(
-                            right: 165,
-                            bottom: 20,
-                            child: Transform.scale(
-                              scale:
-                                  0.3, // Rating barı küçültmek için ölçekleme faktörü
-                              child: RatingBar.builder(
-                                initialRating: 3,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                allowHalfRating: true,
-                                itemCount: 5,
-                                itemPadding:
-                                    EdgeInsets.symmetric(horizontal: 4.0),
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BuyScreen(
+                                          travelId: travelIdData['id'])));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.amber,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Text(
+                                "Satın Al", // Buton metni
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
-                                onRatingUpdate: (rating) {
-                                  print(rating);
-                                },
                               ),
                             ),
                           ),
-                          Positioned(
-                              bottom: 30,
-                              left: 110,
-                              child: Text(
-                                "4.8",
-                                style: fontStyle(
-                                    15, Colors.white, FontWeight.normal),
-                              ))
                         ],
+                      )
+                    : Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Satın Alındı 👏",
+                          style: fontStyle(25, Colors.white, FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "What's Included",
-                        style: fontStyle(15, Colors.black, FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          includedMethod(),
-                          includedMethod(),
-                          includedMethod(),
-                          includedMethod(),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "About Trip",
-                        style: fontStyle(15, Colors.black, FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "${travelIdData['hakkında']}",
-                        style: fontStyle(15, Colors.black, FontWeight.normal),
-                      ),
-                    ),
-                  ],
-                )
-              : Text("Loading"),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                "${travelIdData['ücreti']} TL /Person", // Gezinin fiyatı
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const BuyScreen()));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Text(
-                    "Satın Al", // Buton metni
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            )
+          : null,
     );
   }
 
-  Row includedMethod() {
+  Row includedMethod(String include) {
+    IconData iconData;
+
+    // İstenen simgeye göre ikonu belirle
+    switch (include) {
+      case "Uçak":
+        iconData = CupertinoIcons.airplane;
+        break;
+      case "Otel":
+        iconData = CupertinoIcons.house_alt;
+        break;
+      case "Ulaşım":
+        iconData = CupertinoIcons.car;
+        break;
+      case "Vize":
+        iconData = CupertinoIcons.book;
+      default:
+        // Varsayılan olarak "add" simgesini kullan
+        iconData = CupertinoIcons.add;
+    }
     return Row(
       children: [
         Container(
@@ -303,7 +354,7 @@ Future<void> fetchBookmarkAndLiked() async {
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey.shade100),
                   child: Icon(
-                    CupertinoIcons.airplane,
+                    iconData,
                     color: Colors.amber,
                   ),
                 ),
@@ -311,7 +362,7 @@ Future<void> fetchBookmarkAndLiked() async {
                   width: 8,
                 ),
                 Text(
-                  "Flight",
+                  "${include}",
                   style: fontStyle(15, Colors.black, FontWeight.bold),
                 ),
               ],

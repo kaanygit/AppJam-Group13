@@ -1,8 +1,10 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/models/traveldata.dart';
-import 'package:appjam_group13/screens/showmore.dart';
-import 'package:appjam_group13/screens/travel_places_preview.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/showmore.dart';
+import 'package:GezginAt/screens/travel_places_preview.dart';
+import 'package:GezginAt/widgets/flash_message.dart';
+import 'package:GezginAt/widgets/fonts.dart';
+import 'package:GezginAt/widgets/not_found.dart';
+import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -17,6 +19,8 @@ class _HomePageState extends State<HomePage> {
   int selectedTextIndex = 0;
   List<Map<String, dynamic>> travelData = [];
   Map<String, dynamic> userProfile = {};
+  List<Map<String, dynamic>> orderTravelPlaces = [];
+  List<Map<String, dynamic>> filteredTravelData = [];
 
   late bool _loadingValue = false;
   @override
@@ -29,10 +33,16 @@ class _HomePageState extends State<HomePage> {
     try {
       List<Map<String, dynamic>> travels =
           await FirebaseOperations().getFirebaseTravelData();
-      // await FirebaseOperations().gesssss();
+      Map<String, dynamic> data = await FirebaseOperations().getProfileBio();
+      for (var x in data['joinedPlaces']) {
+        orderTravelPlaces
+            .add(await FirebaseOperations().getFirebaseTravelDataId(x));
+      }
+      print(orderTravelPlaces);
       setState(() {
         print(travels);
         travelData = travels;
+        filteredTravelData = travels;
         _loadingValue = true;
       });
     } catch (e) {
@@ -70,6 +80,8 @@ class _HomePageState extends State<HomePage> {
                                   prefixInsets: EdgeInsets.only(left: 8),
                                   placeholder: 'Search Places',
                                   onChanged: (String value) {
+                                    showSuccessSnackBar(context,
+                                        "Merhaba şuan geliştirme aşamasındayız. Çok yakında bu özelliğe erişebileceksin!");
                                     print(value);
                                   },
                                   onSubmitted: (String value) {
@@ -82,6 +94,8 @@ class _HomePageState extends State<HomePage> {
                                 child: IconButton(
                                   onPressed: () {
                                     print("Seçenekleri aç");
+                                    showSuccessSnackBar(context,
+                                        "Merhaba şuan geliştirme aşamasındayız. Çok yakında bu özelliğe erişebileceksin!");
                                   },
                                   icon: Icon(
                                     Icons.more_vert,
@@ -171,32 +185,61 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          MyScheduleCard(),
+                          for (int i = 0; i < orderTravelPlaces.length; i++)
+                            MyScheduleCard(i),
                         ],
                       )
-                    : Text("İÇİ BOŞ")
-                : Text("Loading"),
+                    : const NotFoundScreen()
+                : const Column(
+                    children: [
+                      CardLoading(
+                        height: 100,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CardLoading(
+                        height: 100,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CardLoading(
+                        height: 100,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),
     );
   }
 
-  Column MyScheduleCard() {
+  Column MyScheduleCard(int index) {
     return Column(
       children: [
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(15)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(width: 2.0, color: Colors.grey.shade300)),
           child: InkWell(
             onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const TravelPlacesPreview(
-                            travelPlacesId: 15,
+                      builder: (context) => TravelPlacesPreview(
+                            travelPlacesId: orderTravelPlaces[index]['id'],
                           )));
             },
             child: Column(
@@ -209,8 +252,8 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child: Image.asset(
-                              "assets/images/niagarafalls.jpg",
+                            child: Image.network(
+                              "${orderTravelPlaces[index]['resim']}",
                               width: 75,
                               height: 75,
                               fit: BoxFit.fitWidth,
@@ -223,7 +266,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Niagara Falls",
+                                "${orderTravelPlaces[index]['isim']}",
                                 style: fontStyle(
                                     14, Colors.black, FontWeight.bold),
                               ),
@@ -235,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.lightGreen,
                                   ),
                                   Text(
-                                    "Canada",
+                                    "${orderTravelPlaces[index]['konumu']}",
                                     style: fontStyle(
                                         13, Colors.grey, FontWeight.normal),
                                   )
@@ -248,6 +291,13 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           print("Button clicked");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TravelPlacesPreview(
+                                        travelPlacesId: orderTravelPlaces[index]
+                                            ['id'],
+                                      )));
                         },
                         child: Text(
                           "Joined",
@@ -257,7 +307,7 @@ class _HomePageState extends State<HomePage> {
                             backgroundColor: Colors.lightGreen,
                             minimumSize: Size(30, 35),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30))),
+                                borderRadius: BorderRadius.circular(10))),
                       )
                     ],
                   ),
@@ -292,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(width: 2.0, color: Colors.grey.shade300)),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Stack(
                   children: [

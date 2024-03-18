@@ -9,3 +9,11 @@ void showErrorSnackBar(BuildContext context, String errorMessage) {
     ),
   );
 }
+
+void showSuccessSnackBar(BuildContext context, String successMessage) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(successMessage),
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: Colors.green,
+  ));
+}

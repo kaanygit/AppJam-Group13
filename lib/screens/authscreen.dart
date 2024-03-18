@@ -1,9 +1,10 @@
-import 'package:appjam_group13/database/firebase.dart';
-import 'package:appjam_group13/screens/homescreen.dart';
-import 'package:appjam_group13/widgets/flash_message.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/homescreen.dart';
+import 'package:GezginAt/widgets/flash_message.dart';
+import 'package:GezginAt/widgets/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sign_button/sign_button.dart';
 
 class AuthScreenState extends StatelessWidget {
@@ -73,7 +74,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Kayıt başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
         );
       } else {
         // Show error message
@@ -109,7 +110,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Giriş başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
         );
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
@@ -128,7 +129,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -168,9 +169,9 @@ class _AuthScreenState extends State<AuthScreen> {
               children: [
                 const Spacer(),
                 Text(
-                  "AppJam",
+                  "GezginAt",
                   style:
-                      fontStyle(40, const Color(0xFFDBFF00), FontWeight.bold),
+                      fontStyle(50, const Color(0xFFDBFF00), FontWeight.bold),
                 ),
                 const Spacer(),
               ],
@@ -197,7 +198,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         });
                       },
                       child: Text(
-                        "Start",
+                        "Başla",
                         style: fontStyle(25, Colors.white, FontWeight.normal),
                       )),
                 ),
@@ -219,12 +220,13 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                child: Text(
-                  "AppJam13",
-                  style: fontStyle(25, Colors.black, FontWeight.bold),
+                child: Image.asset(
+                  "assets/images/icon.png",
+                  width: 250,
+                  height: 250,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 30),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -249,12 +251,18 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: ElevatedButton(
                       onPressed: _signInEmailAndPassword,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12))),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Text("Sign In"),
+                        child: Text(
+                          "Sign In",
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
@@ -300,7 +308,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: const Text("Sign Up"),
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(color: Colors.lightGreen),
+                    ),
                   )
                 ],
               )
@@ -321,7 +332,11 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                child: const Text("AppJam13"),
+                child: Image.asset(
+                  "assets/images/icon.png",
+                  width: 250,
+                  height: 250,
+                ),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -365,13 +380,18 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: ElevatedButton(
                       onPressed: _signUpWithEmailAndPassword,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12))),
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Text("Sign Up"),
-                      ),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          )),
                     ),
                   ),
                 ],
@@ -416,7 +436,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: const Text("Sign In"),
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(color: Colors.lightGreen),
+                    ),
                   )
                 ],
               )

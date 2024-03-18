@@ -1,24 +1,27 @@
-import 'package:appjam_group13/screens/homepagescreen.dart';
-import 'package:appjam_group13/screens/homescreen.dart';
-import 'package:appjam_group13/widgets/flash_message.dart';
-import 'package:appjam_group13/widgets/fonts.dart';
+import 'package:GezginAt/database/firebase.dart';
+import 'package:GezginAt/screens/homescreen.dart';
+import 'package:GezginAt/widgets/flash_message.dart';
+import 'package:GezginAt/widgets/fonts.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BuyScreen extends StatelessWidget {
-  const BuyScreen({Key? key});
+  final int travelId;
+  const BuyScreen({Key? key, required this.travelId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BuyDetailScreen(),
+      body: BuyDetailScreen(travelId: travelId),
     );
   }
 }
 
 class BuyDetailScreen extends StatefulWidget {
-  const BuyDetailScreen({Key? key});
+  final int travelId;
+
+  const BuyDetailScreen({Key? key, required this.travelId}) : super(key: key);
 
   @override
   State<BuyDetailScreen> createState() => _BuyDetailScreenState();
@@ -37,9 +40,11 @@ class _BuyDetailScreenState extends State<BuyDetailScreen> {
           if (index == 0) {
             return FirstScreen();
           } else if (index == 1) {
-            return SecondScreen();
+            return SecondScreen(
+              travelId: widget.travelId,
+            );
           } else {
-            return ThirdScreen();
+            return ThirdScreen(travelId: widget.travelId);
           }
         },
       ),
@@ -76,7 +81,9 @@ class _BuyDetailScreenState extends State<BuyDetailScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SecondScreen(),
+                      builder: (context) => SecondScreen(
+                        travelId: widget.travelId,
+                      ),
                     ),
                   );
                 },
@@ -179,13 +186,15 @@ final OutlineInputBorder _border = OutlineInputBorder(
 );
 
 class SecondScreen extends StatefulWidget {
+  final int travelId;
+  const SecondScreen({Key, key, required this.travelId}) : super(key: key);
+
   @override
   _SecondScreenState createState() => _SecondScreenState();
 }
 
 class _SecondScreenState extends State<SecondScreen> {
   int _selectedIndex = -1; // Başlangıçta herhangi bir seçim yok
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -266,7 +275,8 @@ class _SecondScreenState extends State<SecondScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ThirdScreen(),
+                        builder: (context) =>
+                            ThirdScreen(travelId: widget.travelId),
                       ),
                     );
                     // Ödeme yöntemi seçildiğinde işlemleri yapabilirsiniz
@@ -349,6 +359,10 @@ class _SecondScreenState extends State<SecondScreen> {
 }
 
 class ThirdScreen extends StatelessWidget {
+  final int travelId;
+
+  const ThirdScreen({Key? key, required this.travelId}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -452,6 +466,7 @@ class ThirdScreen extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
+                  FirebaseOperations().orderTravelData(travelId);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
