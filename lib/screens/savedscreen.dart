@@ -98,8 +98,8 @@ class _SavedScreenState extends State<SavedScreen> {
                                       child: Image.network(
                                         // "assets/images/niagarafalls.jpg",
                                         "${savedPlaces[index]['resim']}",
-                                        width: 150,
-                                        height: 150,
+                                        width: 100,
+                                        height: 100,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -114,7 +114,9 @@ class _SavedScreenState extends State<SavedScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                "${savedPlaces[index]['isim']}",
+                                                // "${savedPlaces[index]['isim']}",
+                                                shortenText(
+                                                    savedPlaces[index]['isim']),
                                                 style: fontStyle(
                                                     20,
                                                     Colors.black,
@@ -203,11 +205,48 @@ class _SavedScreenState extends State<SavedScreen> {
                     SizedBox(height: 16),
                   ],
                 )
-              : NotFoundScreen()
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          "assets/images/notfoundbookmark.png",
+                          width: 300,
+                          height: 300,
+                        ),
+                      ),
+                      SizedBox(height: 20), // Added some spacing
+                      Center(
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Kaydedilmiş Seyahat Bulunamadı!",
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
           : LoadingWidget(
               width: 300,
               height: 300,
             ),
     );
+  }
+
+  String shortenText(String text, {int maxLength = 12}) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return text.substring(0, maxLength) + "...";
+    }
   }
 }

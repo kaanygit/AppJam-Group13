@@ -2,6 +2,7 @@ import 'package:GezginAt/database/firebase.dart';
 import 'package:GezginAt/screens/authscreen.dart';
 import 'package:GezginAt/widgets/flash_message.dart';
 import 'package:GezginAt/widgets/fonts.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -65,21 +66,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
               !loadingProfile &&
                       userProfile['profilePhoto'] != "" &&
                       userProfile['profilePhoto'] != null
-                  ? Container(
-                      alignment: Alignment.center,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage:
-                            NetworkImage(userProfile['profilePhoto']),
-                      ),
+                  ? Stack(
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          child: Container(
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  NetworkImage(userProfile['profilePhoto']),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                            bottom: -10,
+                            right: 100,
+                            child: IconButton(
+                                onPressed: () {
+                                  showSuccessSnackBar(context,
+                                      "Merhaba profil resmi değiştirme özelliğimiz şuan geliştirme aşamasındadır.Çok yakında bu özelliğe erişebileceksin!");
+                                },
+                                icon: Icon(
+                                  CupertinoIcons.pencil,
+                                  size: 40,
+                                  color: Colors.amber,
+                                )))
+                      ],
                     )
-                  : Container(
-                      alignment: Alignment.center,
-                      child: const CircleAvatar(
-                        radius: 50,
-                        backgroundImage:
-                            AssetImage("assets/images/placeholder.png"),
-                      ),
+                  : Stack(
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          child: const CircleAvatar(
+                            radius: 50,
+                            backgroundImage:
+                                AssetImage("assets/images/placeholder.png"),
+                          ),
+                        ),
+                        Positioned(
+                            bottom: -10,
+                            right: 100,
+                            child: IconButton(
+                                onPressed: () {
+                                  showSuccessSnackBar(context,
+                                      "Merhaba profil resmi değiştirme özelliğimiz şuan geliştirme aşamasındadır.Çok yakında bu özelliğe erişebileceksin!");
+                                },
+                                icon: Icon(
+                                  CupertinoIcons.pencil,
+                                  size: 40,
+                                  color: Colors.amber,
+                                )))
+                      ],
                     ),
               const SizedBox(
                 height: 30,

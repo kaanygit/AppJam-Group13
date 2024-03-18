@@ -219,7 +219,7 @@ class _TravelPlacesState extends State<TravelPlaces> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "What's Included",
+                          "Neler İçeriyor ?",
                           style: fontStyle(15, Colors.black, FontWeight.bold),
                         ),
                       ),
@@ -243,7 +243,7 @@ class _TravelPlacesState extends State<TravelPlaces> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "About Trip",
+                          "Seyahat Hakkında",
                           style: fontStyle(15, Colors.black, FontWeight.bold),
                         ),
                       ),
@@ -257,6 +257,34 @@ class _TravelPlacesState extends State<TravelPlaces> {
                           style: fontStyle(15, Colors.black, FontWeight.normal),
                         ),
                       ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Yorumlar",
+                              style:
+                                  fontStyle(15, Colors.black, FontWeight.bold),
+                            ),
+                          ),
+                          // SizedBox(
+                          //   height: 16,
+                          // ),
+                          // Container(
+                          //   alignment: Alignment.center,
+                          //   child: Text(
+                          //     "Yorumlar Kısmı",
+                          //     style:
+                          //         fontStyle(25, Colors.black, FontWeight.bold),
+                          //   ),
+                          // )
+                        ],
+                      )
                     ],
                   )),
             )

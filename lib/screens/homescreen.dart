@@ -42,7 +42,7 @@ class _HomeAppState extends State<HomeApp> {
     ProfileScreen(),
   ];
 
-  List<String> selectedName = ["", "Sohbet", "Kaydedilen Yerler", "Profil"];
+  List<String> selectedName = ["", "Sohbet", "Kaydedilen Seyahatler", "Profil"];
   @override
   void initState() {
     // TODO: implement initState

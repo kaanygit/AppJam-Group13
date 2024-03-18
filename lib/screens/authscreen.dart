@@ -257,7 +257,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text(
-                          "Sign In",
+                          "Giriş Yap",
                           style: TextStyle(
                               fontSize: 15,
                               color: Colors.white,
@@ -278,7 +278,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("or continue with"),
+                    child: Text("veya"),
                   ),
                   Expanded(
                     child: Divider(),
@@ -293,6 +293,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     buttonType: ButtonType.google,
                     buttonSize: ButtonSize.medium,
                     onPressed: _signInWithGoogle,
+                    btnText: "Google ile Giriş Yap",
                   )),
                 ],
               ),
@@ -300,7 +301,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account ? "),
+                  const Text("Hesabın Yokmu ? "),
                   TextButton(
                     onPressed: () {
                       print("Login In");
@@ -309,7 +310,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       });
                     },
                     child: const Text(
-                      "Sign Up",
+                      "Üye ol",
                       style: TextStyle(color: Colors.lightGreen),
                     ),
                   )
@@ -342,7 +343,7 @@ class _AuthScreenState extends State<AuthScreen> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: "Name",
+                  labelText: "İsim",
                   border: _border,
                 ),
               ),
@@ -368,7 +369,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: "Confirm Password",
+                  labelText: "Şifre Doğrulama",
                   border: _border,
                 ),
               ),
@@ -386,7 +387,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           child: Text(
-                            "Sign Up",
+                            "Üye Ol",
                             style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.white,
@@ -406,7 +407,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("or continue with"),
+                    child: Text("veya"),
                   ),
                   Expanded(
                     child: Divider(),
@@ -421,6 +422,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     buttonType: ButtonType.google,
                     buttonSize: ButtonSize.medium,
                     onPressed: _signInWithGoogle,
+                    btnText: "Google ile Giriş Yap",
                   )),
                 ],
               ),
@@ -428,7 +430,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account ? "),
+                  const Text("Hesabın Varmı ? "),
                   TextButton(
                     onPressed: () {
                       print("Login In");
@@ -437,7 +439,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       });
                     },
                     child: const Text(
-                      "Sign In",
+                      "Giriş Yap",
                       style: TextStyle(color: Colors.lightGreen),
                     ),
                   )
