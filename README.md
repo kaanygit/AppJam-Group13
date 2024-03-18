@@ -38,6 +38,30 @@ App Jam 13 takımı olarak, sadece bir yarışmaya katılan değil, aynı zamand
     npm install
     npm start`
 
+## Kullandığımız Kütüphaneler
+  cupertino_icons: ^1.0.6
+  firebase_core: ^2.27.1
+  firebase_auth: ^4.17.9
+  cloud_firestore: ^4.15.9
+  sign_in_button: ^3.2.0
+  sign_button: ^2.0.6
+  google_fonts: ^6.2.1
+  google_sign_in: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  navbar_router: ^0.7.3
+  google_nav_bar: ^5.0.6
+  flutter_dotenv: ^5.1.0
+  google_generative_ai: ^0.2.2
+  image_picker: ^0.8.4+4
+  flutter_rating_bar: ^4.0.1
+  confetti: ^0.7.0
+  card_loading: ^0.3.2
+  page_transition: ^2.1.0
+  flutter_launcher_icons: ^0.13.1
+
+## Kullanılan Dart Sürümü
+- Tools • Dart 3.3.1 • DevTools 2.31.1
+
 ## Katkıda Bulunma
 
 
