@@ -1,4 +1,4 @@
-# # GezginAt
+# GezginAt
 
 GezginAt, seyahat severlerin ihtiyaçlarını karşılamak üzere tasarlanmış bir seyahat satın alma uygulamasıdır. Kullanıcılar, en son seyahatleri satın alma, rezervasyon yapma, Gemini chat bot ile seyahat planlarını oluşturma ve beğendikleri seyahatleri kaydetme gibi bir dizi özelliğe erişebilirler.
     
