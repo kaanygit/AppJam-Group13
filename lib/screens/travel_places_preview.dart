@@ -170,7 +170,7 @@ class _TravelPlacesState extends State<TravelPlaces> {
                                   Icon(
                                     Icons.location_on,
                                     size: 15,
-                                    color: Colors.white,
+                                    color: Colors.amber,
                                   ),
                                   Text(
                                     "${travelIdData['konumu']}",
@@ -270,7 +270,7 @@ class _TravelPlacesState extends State<TravelPlaces> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            "${travelIdData['ücreti']} TL /Person", // Gezinin fiyatı
+                            "${travelIdData['ücreti']} TL / Kişi", // Gezinin fiyatı
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

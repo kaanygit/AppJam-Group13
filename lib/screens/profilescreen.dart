@@ -1,5 +1,6 @@
 import 'package:GezginAt/database/firebase.dart';
 import 'package:GezginAt/screens/authscreen.dart';
+import 'package:GezginAt/widgets/flash_message.dart';
 import 'package:GezginAt/widgets/fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic> userProfile = {};
   bool loadingProfile = true;
   bool editingScreen = false;
+  bool darkMode = false;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController educationController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -53,6 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(15),
@@ -92,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Personal Information",
+                        "Kişisel Bilgiler",
                         style: fontStyle(20, Colors.black, FontWeight.bold),
                       ),
                     ),
@@ -102,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Name",
+                        Text("İsim",
                             style: fontStyle(
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
@@ -134,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Education Level",
+                        Text("Eğitim Seviyesi",
                             style: fontStyle(
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
@@ -167,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Address",
+                          "Adres",
                           style: fontStyle(
                               17, Colors.grey.shade800, FontWeight.normal),
                         ),
@@ -214,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Contact Information",
+                        "İletişim Bilgileri",
                         style: fontStyle(20, Colors.black, FontWeight.bold),
                       ),
                     ),
@@ -224,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Phone",
+                        Text("Telefon",
                             style: fontStyle(
                                 17, Colors.grey.shade800, FontWeight.normal)),
                         !editingScreen
@@ -281,6 +284,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: ElevatedButton(
                         onPressed: () {
+                          setState(() {
+                            darkMode = !darkMode;
+                            showSuccessSnackBar(context,
+                                "Merhaba dark mod şuan geliştirme aşamasındadır. Çok yakında bu özelliğe erişebileceksin!");
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                darkMode ? Colors.white : Colors.black,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Text(
+                          darkMode ? "Light Mode" : "Dark Mode",
+                          style: darkMode
+                              ? fontStyle(17, Colors.black, FontWeight.normal)
+                              : fontStyle(17, Colors.white, FontWeight.normal),
+                        )),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                        onPressed: () {
                           if (editingScreen) {
                             _saveProfileChanges();
                           }
@@ -293,7 +321,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12))),
                         child: Text(
-                          editingScreen ? "Save" : "Edit",
+                          editingScreen ? "Kaydet" : "Düzenle",
                           style: fontStyle(17, Colors.white, FontWeight.normal),
                         )),
                   ),
@@ -316,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12))),
                         child: Text(
-                          "Sign Out",
+                          "Çıkış Yap",
                           style: fontStyle(17, Colors.white, FontWeight.normal),
                         )),
                   ),
@@ -340,7 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12))),
                         child: Text(
-                          "Delete Account",
+                          "Hesabı Sil",
                           style: fontStyle(17, Colors.white, FontWeight.normal),
                         )),
                   ),

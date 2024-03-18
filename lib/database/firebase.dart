@@ -364,19 +364,20 @@ class FirebaseOperations {
   Future<void> orderTravelData(int id) async {
     try {
       Map<String, dynamic> profileData = await getProfileBio();
-      List<dynamic>? joinedPlaces = List.from(profileData['orderPlaces'] ?? []);
+      List<dynamic> joinedPlaces =
+          profileData['joinedPlaces'] ?? []; // Eğer null ise boş liste oluştur
 
-      // Check if the id already exists in the list
-      if (!joinedPlaces.contains(id)) {
-        // If id doesn't exist, add it to the list
+      if (joinedPlaces.contains(id)) {
+        joinedPlaces.remove(id);
+        print("Beğenme Kalktı");
+      } else {
+        // Değilse, listede bu yerin ID'sini ekleyin
         joinedPlaces.add(id);
+        print("Beğenme Eklendi");
       }
-
-      await _firestore.collection('users').doc(_auth.currentUser!.uid).set(
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update(
         {'joinedPlaces': joinedPlaces},
-        SetOptions(
-            merge:
-                true), // Use merge option to merge the new data with existing data
+        // Use merge option to merge the new data with existing data
       );
       print("Alışveriş Yapıldı");
     } catch (e) {

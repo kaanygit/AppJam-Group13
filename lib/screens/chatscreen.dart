@@ -244,7 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                               fillColor: Colors.grey.shade200,
                               filled: true,
-                              hintText: "Can you recommend me places to visit?",
+                              hintText: "Bana bir yer önerir misin?",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
                                 borderSide: BorderSide.none,

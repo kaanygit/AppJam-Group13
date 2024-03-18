@@ -60,7 +60,6 @@ class _HomeAppState extends State<HomeApp> {
     Map<String, dynamic> user = await FirebaseOperations().getProfileBio();
     DateTime now = DateTime.now();
     String greeting = '';
-
     if (now.hour >= 0 && now.hour < 6) {
       greeting = 'İyi Geceler';
     } else if (now.hour >= 6 && now.hour < 12) {
@@ -85,6 +84,7 @@ class _HomeAppState extends State<HomeApp> {
         ? Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
+              backgroundColor: Colors.white,
               title: Container(
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: _selectedIndex == 0
@@ -165,19 +165,19 @@ class _HomeAppState extends State<HomeApp> {
                     tabs: [
                       GButton(
                         icon: CupertinoIcons.compass,
-                        text: 'Home',
+                        text: 'Anasayfa',
                       ),
                       GButton(
                         icon: CupertinoIcons.chat_bubble,
-                        text: 'Chat',
+                        text: 'Sohbet',
                       ),
                       GButton(
                         icon: CupertinoIcons.bookmark,
-                        text: 'Saved',
+                        text: 'Kaydedilenler',
                       ),
                       GButton(
                         icon: CupertinoIcons.person_crop_circle,
-                        text: 'Profile',
+                        text: 'Profil',
                       ),
                     ],
                     selectedIndex: _selectedIndex,

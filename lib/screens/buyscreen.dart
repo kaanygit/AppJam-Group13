@@ -592,7 +592,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
-                    "Explore Other Places", // Buton metni
+                    "Yeni Yerler Keşfet !", // Buton metni
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

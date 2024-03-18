@@ -23,6 +23,8 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> filteredTravelData = [];
 
   late bool _loadingValue = false;
+  late bool _searchBoxActive = false;
+  final TextEditingController _searchBoxController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -53,174 +55,298 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Container(
-            child: _loadingValue
-                ? travelData.isNotEmpty
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Güzel Dünyayı \nKeşfedin ve Tadını Çıkarın!",
-                              style:
-                                  fontStyle(20, Colors.black, FontWeight.bold),
+          child: filtredValuesCard(context),
+        ),
+      ),
+    );
+  }
+
+  Container filtredValuesCard(BuildContext context) {
+    return Container(
+      child: _loadingValue
+          ? travelData.isNotEmpty
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Güzel Dünyayı \nKeşfedin ve Tadını Çıkarın!",
+                        style: fontStyle(20, Colors.black, FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CupertinoSearchTextField(
+                            padding: EdgeInsets.symmetric(vertical: 12.0),
+                            prefixInsets: EdgeInsets.only(left: 8),
+                            placeholder: 'Arama Kutusu',
+                            controller: _searchBoxController,
+                            onChanged: (String value) {
+                              // showSuccessSnackBar(context,
+                              //     "Merhaba şuan geliştirme aşamasındayız. Çok yakında bu özelliğe erişebileceksin!");
+                              setState(() {
+                                filteredTravelData = travelData
+                                    .where((travel) => travel['isim']
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase()))
+                                    .toList();
+                                _searchBoxActive = true;
+                              });
+                            },
+                            onSubmitted: (String value) {
+                              print("submit value : $value");
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Container(
+                          child: IconButton(
+                            onPressed: () {
+                              print("Seçenekleri aç");
+                              showSuccessSnackBar(context,
+                                  "Merhaba özelliklere göre filtreleme butonumuz geliştirme aşamasındadır. Destekleriniz için Teşekkür ederiz :\)");
+                            },
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Colors.lightGreen,
                             ),
                           ),
-                          SizedBox(height: 16),
-                          Row(
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    // FiltredValue AYIRIMI
+                    !_searchBoxActive || _searchBoxController.text == ""
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: CupertinoSearchTextField(
-                                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                                  prefixInsets: EdgeInsets.only(left: 8),
-                                  placeholder: 'Search Places',
-                                  onChanged: (String value) {
-                                    showSuccessSnackBar(context,
-                                        "Merhaba şuan geliştirme aşamasındayız. Çok yakında bu özelliğe erişebileceksin!");
-                                    print(value);
-                                  },
-                                  onSubmitted: (String value) {
-                                    print("submit value : $value");
-                                  },
-                                ),
-                              ),
-                              SizedBox(width: 8),
                               Container(
-                                child: IconButton(
-                                  onPressed: () {
-                                    print("Seçenekleri aç");
-                                    showSuccessSnackBar(context,
-                                        "Merhaba şuan geliştirme aşamasındayız. Çok yakında bu özelliğe erişebileceksin!");
-                                  },
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.lightGreen,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 16),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Seyahat Yerleri",
-                                  style: fontStyle(
-                                      20, Colors.lightGreen, FontWeight.bold),
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      print("Show more Buttonu");
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ShowMoreScreen()));
-                                    },
-                                    child: Text("Daha Fazla >",
-                                        style: fontStyle(13, Colors.grey,
-                                            FontWeight.normal)))
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Column(
+                                child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    buildRotatedText("Popüler", 0),
-                                    SizedBox(height: 10),
-                                    buildRotatedText("En Son", 1),
-                                    SizedBox(height: 10),
-                                    buildRotatedText("Hepsi", 2),
+                                    Text(
+                                      "Seyahat Yerleri",
+                                      style: fontStyle(20, Colors.lightGreen,
+                                          FontWeight.bold),
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          print("Show more Buttonu");
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const ShowMoreScreen()));
+                                        },
+                                        child: Text("Daha Fazla >",
+                                            style: fontStyle(13, Colors.grey,
+                                                FontWeight.normal)))
                                   ],
                                 ),
-                                SizedBox(width: 10),
+                              ),
+                              SizedBox(height: 10),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        buildRotatedText("Popüler", 0),
+                                        SizedBox(height: 10),
+                                        buildRotatedText("En Son", 1),
+                                        SizedBox(height: 10),
+                                        buildRotatedText("Hepsi", 2),
+                                      ],
+                                    ),
+                                    SizedBox(width: 10),
 
-                                ///
-                                for (int i = 1; i <= 4; i++)
-                                  TravelPlacesCard(travelData[i]),
+                                    ///
+                                    for (int i = 1; i <= 4; i++)
+                                      TravelPlacesCard(travelData[i]),
 
-                                ///
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Seyahatlerim",
-                                  style: fontStyle(
-                                      20, Colors.lightGreen, FontWeight.bold),
+                                    ///
+                                  ],
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    print("Show More");
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ShowMoreScreen()));
-                                  },
-                                  child: Text("Daha Fazla >",
-                                      style: fontStyle(
-                                          13, Colors.grey, FontWeight.normal)),
-                                )
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 16),
+                              Container(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Seyahatlerim",
+                                      style: fontStyle(20, Colors.lightGreen,
+                                          FontWeight.bold),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        print("Show More");
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ShowMoreScreen()));
+                                      },
+                                      child: Text("Daha Fazla >",
+                                          style: fontStyle(13, Colors.grey,
+                                              FontWeight.normal)),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              for (int i = 0; i < orderTravelPlaces.length; i++)
+                                MyScheduleCard(i),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              for (int i = 0;
+                                  i < filteredTravelData.length;
+                                  i++)
+                                filtredTravelData(i),
+                            ],
                           ),
-                          SizedBox(height: 10),
-                          for (int i = 0; i < orderTravelPlaces.length; i++)
-                            MyScheduleCard(i),
-                        ],
-                      )
-                    : const NotFoundScreen()
-                : const Column(
+                  ],
+                )
+              : const NotFoundScreen()
+          : const Column(
+              children: [
+                CardLoading(
+                  height: 100,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  margin: EdgeInsets.only(bottom: 10),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CardLoading(
+                  height: 100,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  margin: EdgeInsets.only(bottom: 10),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CardLoading(
+                  height: 100,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  margin: EdgeInsets.only(bottom: 10),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CardLoading(
+                  height: 100,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  margin: EdgeInsets.only(bottom: 10),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CardLoading(
+                  height: 100,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  margin: EdgeInsets.only(bottom: 10),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+    );
+  }
+
+  Column filtredTravelData(int i) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TravelPlacesPreview(
+                          travelPlacesId: travelData[i]['id'],
+                        )));
+          },
+          child: Container(
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              border: Border.all(width: 2.0, color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: Image.network(
+                    "${filteredTravelData[i]['resim']}",
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  // Expanded widget'ını kullanarak metin kutusunu genişletelim
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CardLoading(
-                        height: 100,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        margin: EdgeInsets.only(bottom: 10),
+                      Text(
+                        "${filteredTravelData[i]['isim']}",
+                        style: fontStyle(20, Colors.black, FontWeight.bold),
                       ),
-                      SizedBox(
-                        height: 20,
+                      Text(
+                        "${filteredTravelData[i]['ücreti']} TL",
+                        style: fontStyle(15, Colors.red, FontWeight.normal),
                       ),
-                      CardLoading(
-                        height: 100,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        margin: EdgeInsets.only(bottom: 10),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 15,
+                            color: Colors.amber,
+                          ),
+                          Text(
+                            "${filteredTravelData[i]['konumu']}",
+                            style:
+                                fontStyle(13, Colors.black, FontWeight.normal),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      CardLoading(
-                        height: 100,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        margin: EdgeInsets.only(bottom: 10),
-                      ),
-                      SizedBox(
-                        height: 20,
+                      Container(
+                        child: Text(
+                          "${filteredTravelData[i]['hakkında']}",
+                          style: fontStyle(
+                              12, Colors.grey.shade700, FontWeight.normal),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        SizedBox(height: 20),
+      ],
     );
   }
 
@@ -256,7 +382,7 @@ class _HomePageState extends State<HomePage> {
                               "${orderTravelPlaces[index]['resim']}",
                               width: 75,
                               height: 75,
-                              fit: BoxFit.fitWidth,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           SizedBox(
@@ -300,7 +426,7 @@ class _HomePageState extends State<HomePage> {
                                       )));
                         },
                         child: Text(
-                          "Joined",
+                          "Satın Alındı",
                           style: fontStyle(12, Colors.white, FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -365,7 +491,7 @@ class _HomePageState extends State<HomePage> {
                               borderRadius: BorderRadius.circular(20)),
                           child: Text(
                             "${travelData['ücreti']} TL",
-                            style: fontStyle(12, Colors.white, FontWeight.bold),
+                            style: fontStyle(14, Colors.white, FontWeight.bold),
                           ),
                         ))
                   ],
