@@ -10,7 +10,7 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
-  late List<dynamic> examList = [];
+  late List<dynamic> savedPlaces = [];
   bool loadingExamData = true;
 
   @override
@@ -22,7 +22,8 @@ class _SavedScreenState extends State<SavedScreen> {
   Future<void> getExamList() async {
     Map<String, dynamic> data = await FirebaseOperations().getProfileBio();
     setState(() {
-      examList = data['examList'];
+      savedPlaces = data['savedPlaces'];
+      print(savedPlaces);
       loadingExamData = false;
     });
   }
@@ -32,12 +33,12 @@ class _SavedScreenState extends State<SavedScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: !loadingExamData
-          ? examList.length != 0
+          ? savedPlaces.length != 0
               ? Column(
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        itemCount: examList.length,
+                        itemCount: savedPlaces.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: EdgeInsets.symmetric(
@@ -54,8 +55,11 @@ class _SavedScreenState extends State<SavedScreen> {
                                 children: [
                                   Container(
                                     alignment: Alignment.center,
-                                    child:
-                                        Image.asset("assets/images/test.png"),
+                                    child: Image.asset(
+                                      "assets/images/niagarafalls.jpg",
+                                      width: 150,
+                                      height: 150,
+                                    ),
                                   ),
                                   SizedBox(width: 20),
                                   Expanded(
@@ -87,8 +91,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                           children: [
                                             Row(
                                               children: [
-                                                Text(
-                                                    "${(examList[0]['examList'] as List).length}",
+                                                Text("zxc",
                                                     style: fontStyle(
                                                         15,
                                                         Colors.green,
@@ -105,8 +108,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                             ),
                                             Row(
                                               children: [
-                                                Text(
-                                                    "${examList[index]['duration']}",
+                                                Text("as",
                                                     style: fontStyle(
                                                         15,
                                                         Colors.black45,

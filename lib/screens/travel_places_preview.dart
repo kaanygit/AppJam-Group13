@@ -1,3 +1,4 @@
+import 'package:appjam_group13/database/firebase.dart';
 import 'package:appjam_group13/screens/buyscreen.dart';
 import 'package:appjam_group13/widgets/fonts.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,11 +31,39 @@ class TravelPlaces extends StatefulWidget {
 }
 
 class _TravelPlacesState extends State<TravelPlaces> {
+  late bool _loadingValue = false;
+  Map<String, dynamic> travelIdData = {};
+  late bool bookmark;
   @override
   void initState() {
     super.initState();
     print("Travel ID: ${widget.travelId}");
+    fetchTravelIdData();
+    bookmark = false;
   }
+
+  Future<void> fetchTravelIdData() async {
+    Map<String, dynamic> getTravelData =
+        await FirebaseOperations().getFirebaseTravelDataId(widget.travelId);
+
+    print(getTravelData);
+    setState(() {
+      travelIdData = getTravelData;
+      fetchBookmarkAndLiked();
+      _loadingValue = true;
+    });
+  }
+
+Future<void> fetchBookmarkAndLiked() async {
+  Map<String, dynamic> getProfileData =
+      await FirebaseOperations().getProfileBio();
+  print(getProfileData['savedPlaces'].contains(widget.travelId));
+  setState(() {
+    bookmark = getProfileData['savedPlaces'].contains(widget.travelId);
+    // Renk değişimini burada gerçekleştir
+    bookmark ? Colors.blue : Colors.black;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +85,29 @@ class _TravelPlacesState extends State<TravelPlaces> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Londra",
+              "${travelIdData['isim']}",
               style: fontStyle(20, Colors.black, FontWeight.bold),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                CupertinoIcons.heart_fill,
-                color: Colors.red,
-              ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.heart_fill,
+                    color: Colors.red,
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      FirebaseOperations()
+                          .setProfileJoinedBookmarks(travelIdData['id']);
+                      fetchBookmarkAndLiked();
+                    },
+                    icon: Icon(
+                      CupertinoIcons.bookmark_fill,
+                      color: bookmark ? Colors.blue : Colors.black,
+                    ))
+              ],
             ),
           ],
         ),
@@ -72,125 +115,130 @@ class _TravelPlacesState extends State<TravelPlaces> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Container(
-                alignment: Alignment.center,
-                height: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Stack(
+          child: _loadingValue
+              ? Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        "assets/images/niagarafalls.jpg",
-                        fit: BoxFit.cover,
+                    Container(
+                      alignment: Alignment.center,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ),
-                    Positioned(
-                        bottom: 100,
-                        left: 30,
-                        child: Text(
-                          "Londra",
-                          style: fontStyle(25, Colors.white, FontWeight.normal),
-                        )),
-                    Positioned(
-                      bottom: 75,
-                      left: 30,
-                      child: Row(
+                      child: Stack(
                         children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 15,
-                            color: Colors.white,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              "${travelIdData['resim']}",
+                              fit: BoxFit.fill,
+                            ),
                           ),
-                          Text(
-                            "Italy",
-                            style:
-                                fontStyle(15, Colors.white, FontWeight.normal),
+                          Positioned(
+                              bottom: 100,
+                              left: 30,
+                              child: Text(
+                                "${travelIdData['isim']}",
+                                style: fontStyle(
+                                    25, Colors.white, FontWeight.normal),
+                              )),
+                          Positioned(
+                            bottom: 75,
+                            left: 30,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  "${travelIdData['konumu']}",
+                                  style: fontStyle(
+                                      15, Colors.white, FontWeight.normal),
+                                ),
+                              ],
+                            ),
                           ),
+                          Positioned(
+                            right: 165,
+                            bottom: 20,
+                            child: Transform.scale(
+                              scale:
+                                  0.3, // Rating barı küçültmek için ölçekleme faktörü
+                              child: RatingBar.builder(
+                                initialRating: 3,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                allowHalfRating: true,
+                                itemCount: 5,
+                                itemPadding:
+                                    EdgeInsets.symmetric(horizontal: 4.0),
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                onRatingUpdate: (rating) {
+                                  print(rating);
+                                },
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                              bottom: 30,
+                              left: 110,
+                              child: Text(
+                                "4.8",
+                                style: fontStyle(
+                                    15, Colors.white, FontWeight.normal),
+                              ))
                         ],
                       ),
                     ),
-                    Positioned(
-                      right: 165,
-                      bottom: 20,
-                      child: Transform.scale(
-                        scale:
-                            0.3, // Rating barı küçültmek için ölçekleme faktörü
-                        child: RatingBar.builder(
-                          initialRating: 3,
-                          minRating: 1,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (rating) {
-                            print(rating);
-                          },
-                        ),
+                    SizedBox(height: 10),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "What's Included",
+                        style: fontStyle(15, Colors.black, FontWeight.bold),
                       ),
                     ),
-                    Positioned(
-                        bottom: 30,
-                        left: 110,
-                        child: Text(
-                          "4.8",
-                          style: fontStyle(15, Colors.white, FontWeight.normal),
-                        ))
+                    SizedBox(
+                      height: 16,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          includedMethod(),
+                          includedMethod(),
+                          includedMethod(),
+                          includedMethod(),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "About Trip",
+                        style: fontStyle(15, Colors.black, FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "${travelIdData['hakkında']}",
+                        style: fontStyle(15, Colors.black, FontWeight.normal),
+                      ),
+                    ),
                   ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "What's Included",
-                  style: fontStyle(15, Colors.black, FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    includedMethod(),
-                    includedMethod(),
-                    includedMethod(),
-                    includedMethod(),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "About Trip",
-                  style: fontStyle(15, Colors.black, FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Bu seyahat, hayatınızın unutulmaz deneyimlerinden biri olacak! Doğanın eşsiz güzelliklerini keşfetmek, farklı kültürlerin tadını çıkarmak ve yeni insanlarla tanışmak için mükemmel bir fırsat. Bu seyahatte muhteşem manzaraların, lezzetli yerel yemeklerin ve heyecan verici aktivitelerin tadını çıkaracaksınız. Enerji dolu bir macera için hazır mısınız? O zaman bu seyahat tam size göre!",
-                  style: fontStyle(15, Colors.black, FontWeight.normal),
-                ),
-              ),
-            ],
-          ),
+                )
+              : Text("Loading"),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -200,7 +248,7 @@ class _TravelPlacesState extends State<TravelPlaces> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                "\$750 /Person", // Gezinin fiyatı
+                "${travelIdData['ücreti']} TL /Person", // Gezinin fiyatı
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

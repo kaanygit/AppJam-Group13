@@ -1,3 +1,4 @@
+import 'package:appjam_group13/models/traveldata.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -172,6 +173,7 @@ class FirebaseOperations {
       "ücreti": "1299",
       "konumu": "İtalya",
       "id": 1,
+      "gün": 5,
       "hakkında":
           "Roma İmparatorluğu döneminde gladyatör dövüşlerine ve diğer kamusal etkinliklere ev sahipliği yapmış antik bir amfi tiyatro.",
       "kayıtlılar": [],
@@ -185,6 +187,7 @@ class FirebaseOperations {
       "ücreti": "999",
       "konumu": "Mısır",
       "id": 2,
+      "gün": 3,
       "hakkında":
           "Eski Mısır uygarlığının bir parçası olan piramitler, ölülerin gömülmesi için yapılmış anıtsal yapılardır.",
       "kayıtlılar": [],
@@ -198,6 +201,7 @@ class FirebaseOperations {
       "ücreti": "650",
       "konumu": "Türkiye",
       "id": 3,
+      "gün": 2,
       "hakkında":
           "Efes Antik Kenti'nde bulunan ve antik dünyanın yedi harikasından biri olarak kabul edilen Artemis Tapınağı, Artemis'e adanmış bir tapınaktı.",
       "kayıtlılar": [],
@@ -211,6 +215,7 @@ class FirebaseOperations {
       "ücreti": "1999",
       "konumu": "Peru",
       "id": 4,
+      "gün": 7,
       "hakkında":
           "Machu Picchu, Inka İmparatorluğu'nun döneminde inşa edilmiş muhteşem bir antik kenttir ve dünya mirası listesinde yer almaktadır.",
       "kayıtlılar": [],
@@ -224,6 +229,7 @@ class FirebaseOperations {
       "ücreti": "899",
       "konumu": "Hindistan",
       "id": 5,
+      "gün": 6,
       "hakkında":
           "Tac Mahal, Hindistan'ın Agra kentindeki bir anıt mezar kompleksi ve dünya mirasıdır. İmparator Şah Cihan'ın eşi Mumtaz Mahal'in anısına yapılmıştır.",
       "kayıtlılar": [],
@@ -237,6 +243,7 @@ class FirebaseOperations {
       "ücreti": "1099",
       "konumu": "Çin",
       "id": 6,
+      "gün": 4,
       "hakkında":
           "Çin Seddi, Çin'in kuzey sınırını korumak için inşa edilmiş devasa bir surlardır. Binlerce kilometre uzunluğundadır ve tarih boyunca pek çok Çin hanedanı tarafından inşa edilmiştir.",
       "kayıtlılar": [],
@@ -266,11 +273,77 @@ class FirebaseOperations {
       snapshot.docs.forEach((doc) {
         data.add(doc.data() as Map<String, dynamic>);
       });
-      print(data);
       return data;
     } catch (e) {
       print("Veri Çekerken hata oluştu : $e");
       return [];
+    }
+  }
+
+  Future<Map<String, dynamic>> getFirebaseTravelDataId(int id) async {
+    try {
+      List<Map<String, dynamic>> travelData = await getFirebaseTravelData();
+      for (var i in travelData) {
+        if (i['id'] == id) {
+          return i;
+        }
+      }
+      return {};
+    } catch (e) {
+      print("Veri Çekerken hata oluştu : $e");
+      return {};
+    }
+  }
+
+  Future<int> setProfileJoinedBookmarks(int id) async {
+    try {
+      Map<String, dynamic> travelData = await getFirebaseTravelDataId(id);
+      Map<String, dynamic> profileData = await getProfileBio();
+
+      // Kullanıcının veritabanındaki kayıtlı yerler listesini alın
+      List<dynamic> joinedPlaces = profileData['savedPlaces'];
+
+      // Eğer veritabanında kayıtlı yerler listesi yoksa, oluşturun
+      if (joinedPlaces == null) {
+        joinedPlaces = [];
+      }
+
+      // Eğer veritabanında bu yerin ID'si zaten varsa, listeden kaldırın
+      if (joinedPlaces.contains(id)) {
+        joinedPlaces.remove(id);
+        print("kalktı");
+      } else {
+        // Değilse, listede bu yerin ID'sini ekleyin
+        joinedPlaces.add(id);
+        print("eklendi");
+      }
+
+      // Firestore'da kullanıcının kayıtlı yerler listesini güncelleyin
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .update({'savedPlaces': joinedPlaces});
+
+      // İşlem başarıyla tamamlandı, 0 değerini döndürün
+      return 0;
+    } catch (e) {
+      // Hata durumunda, 1 değerini döndürün
+      print("Veri Çekerken hata oluştu : $e");
+      return 1;
+    }
+  }
+
+  Future<Map<String, dynamic>> getProfileJoinedPlaces() async {
+    try {
+      List<Map<String, dynamic>> travelData = await getFirebaseTravelData();
+      Map<String, dynamic> profileData = await getProfileBio();
+// List<int> profileJoinedPlaces
+      print(travelData);
+      print(profileData);
+      return {};
+    } catch (e) {
+      print("Veri Çekerken hata oluştu : $e");
+      return {};
     }
   }
 
